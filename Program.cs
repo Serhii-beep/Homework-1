@@ -126,9 +126,9 @@ namespace Education
                 }
                 Console.WriteLine("Введiть назву групи:");
                 Group group = new Group(Console.ReadLine());
-                Console.WriteLine("Введiть iмена хороших студентiв(в рядок без пробiлiв):");
+                Console.WriteLine("Введiть iмена хороших студентiв(в рядок через пробiл):");
                 string[] good_students_names = Console.ReadLine().Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
-                Console.WriteLine("Введiть iмена поганих студентiв(в рядок без пробiлiв):");
+                Console.WriteLine("Введiть iмена поганих студентiв(в рядок через пробiл):");
                 string[] bad_students_names = Console.ReadLine().Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
                 foreach (var s in good_students_names)
                 {
