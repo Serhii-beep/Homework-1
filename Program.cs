@@ -1,56 +1,115 @@
 ﻿using System;
+using System.Collections.Generic;
 
-namespace ConsoleApp2
+namespace Education
 {
-
-    class Converter
+    abstract class Student
     {
-        private double uah_per_usd;
-        private double uah_per_euro;
-        private double usd_per_uah;
-        private double euro_per_uah;
+        protected string name;
+        protected string state;
 
-        public Converter(double usd, double euro)
+        protected Student(string name_)
         {
-            uah_per_usd = usd;
-            uah_per_euro = euro;
-            usd_per_uah = 1 / uah_per_usd;
-            euro_per_uah = 1 / uah_per_euro;
+            name = name_;
+            state = String.Empty;
         }
 
-        public Converter(double val, string type)
+        public void Relax()
         {
-            if(type == "usd")
+            state += "Relax";
+        }
+
+        public void Read()
+        {
+            state += "Read";
+        }
+
+        public void Write()
+        {
+            state += "Write";
+        }
+
+        public string GetName()
+        {
+            return name;
+        }
+
+        public string GetState()
+        {
+            return state;
+        }
+
+        public abstract void Study();
+    }
+
+    class GoodStudent: Student
+    { 
+        public GoodStudent(string _name): base(_name)
+        {
+            state += "good";
+        }
+
+        public override void Study()
+        {
+            Read();
+            Write();
+            Read();
+            Write();
+            Relax();
+        }
+    }
+
+    class BadStudent: Student
+    {
+        public BadStudent(string _name): base(_name)
+        {
+            state += "bad";
+        }
+
+        public override void Study()
+        {
+            Relax();
+            Relax();
+            Relax();
+            Relax();
+            Read();
+        }
+
+    }
+
+    class Group
+    {
+        private string group_name;
+        private List<Student> students = new List<Student>();
+
+        public Group(string group_name_)
+        {
+            group_name = group_name_;
+        }
+
+        public void AddStudent(Student st)
+        {
+            students.Add(st);
+            st.Study();
+        }
+
+        public void GetInfo()
+        {
+            Console.WriteLine("Група {0}, список студентiв:", group_name);
+            foreach(var st in students)
             {
-                uah_per_usd = val;
-                usd_per_uah = 1 / val;
+                Console.Write("{0} ", st.GetName());
             }
-            else
+            Console.Write("\n");
+        }
+
+        public void GetFullInfo()
+        {
+            GetInfo();
+            foreach(var st in students)
             {
-                uah_per_euro = val;
-                euro_per_uah = 1 / val;
+                Console.WriteLine("{0}: {1}", st.GetName(), st.GetState());
             }
-        }
-
-
-        public double usd_to_uah(double usd)
-        {
-            return usd * uah_per_usd;
-        }
-
-        public double euro_to_uah(double euro)
-        {
-            return euro * uah_per_euro;
-        }
-
-        public double uah_to_usd(double uah)
-        {
-            return uah * usd_per_uah;
-        }
-
-        public double uah_to_euro(double uah)
-        {
-            return uah * euro_per_uah;
         }
     }
 
@@ -58,51 +117,35 @@ namespace ConsoleApp2
     {
         static void Main(string[] args)
         {
-            System.Threading.Thread.CurrentThread.CurrentCulture = new System.Globalization.CultureInfo("en-US");
             while (true)
             {
-                Console.Write("Натиснiть одну з зазначених клавiш\n1 - Конвертувати гривнi в долари\n" +
-                    "2 - Конвертувати гривнi в євро\n3 - Конвертувати долари в гривнi\n" +
-                    "4 - Конвертувати євро в гривнi\nq - Вихiд\n");
-                switch(Console.ReadKey(true).Key)
+                Console.WriteLine("Для виходу натиснiть q, для продовження будь-яку iншу клавiшу");
+                if(Console.ReadKey(true).Key == ConsoleKey.Q)
                 {
-                    case ConsoleKey.D1:
-                        Console.WriteLine("Введiть курс долара");
-                        double usd_uah = double.Parse(Console.ReadLine());
-                        Converter c1 = new Converter(usd_uah, "usd");
-                        Console.WriteLine("Введiть суму:");
-                        double value1 = double.Parse(Console.ReadLine());
-                        Console.WriteLine("Результат: {0} usd", c1.uah_to_usd(value1));
-                        break;
-                    case ConsoleKey.D2:
-                        Console.WriteLine("Введiть курс євро");
-                        double euro_uah = double.Parse(Console.ReadLine());
-                        Converter c2 = new Converter(euro_uah, "euro");
-                        Console.WriteLine("Введiть суму:");
-                        double value2 = double.Parse(Console.ReadLine());
-                        Console.WriteLine("Результат: {0} euro", c2.uah_to_euro(value2));
-                        break;
-                    case ConsoleKey.D3:
-                        Console.WriteLine("Введiть курс долара");
-                        double uah_usd = double.Parse(Console.ReadLine());
-                        Converter c3 = new Converter(uah_usd, "usd");
-                        Console.WriteLine("Введiть суму:");
-                        double value3 = double.Parse(Console.ReadLine());
-                        Console.WriteLine("Результат: {0} uah", c3.usd_to_uah(value3));
-                        break;
-                    case ConsoleKey.D4:
-                        Console.WriteLine("Введiть курс євро");
-                        double uah_euro = double.Parse(Console.ReadLine());
-                        Converter c4 = new Converter(uah_euro, "euro");
-                        Console.WriteLine("Введiть суму:");
-                        double value4 = double.Parse(Console.ReadLine());
-                        Console.WriteLine("Результат: {0} uah", c4.euro_to_uah(value4));
-                        break;
-                    case ConsoleKey.Q:
-                        Environment.Exit(0);
-                        break;
+                    Environment.Exit(0);
                 }
+                Console.WriteLine("Введiть назву групи:");
+                Group group = new Group(Console.ReadLine());
+                Console.WriteLine("Введiть iмена хороших студентiв(в рядок без пробiлiв):");
+                string[] good_students_names = Console.ReadLine().Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+                Console.WriteLine("Введiть iмена поганих студентiв(в рядок без пробiлiв):");
+                string[] bad_students_names = Console.ReadLine().Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+                foreach (var s in good_students_names)
+                {
+                    GoodStudent st = new GoodStudent(s);
+                    group.AddStudent(st);
+                }
+                foreach (var s in bad_students_names)
+                {
+                    BadStudent st = new BadStudent(s);
+                    group.AddStudent(st);
+                }
+                Console.WriteLine("Iнформацiя про групу:");
+                group.GetFullInfo();
+                Console.Write("\n\n\n");
             }
         }
+
+        
     }
 }
